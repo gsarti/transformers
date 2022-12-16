@@ -465,6 +465,12 @@ class FSMTEncoder(nn.Module):
         self.layers = nn.ModuleList(
             [EncoderLayer(config) for _ in range(config.encoder_layers)]
         )  # type: List[EncoderLayer]
+    
+    def get_input_embeddings(self):
+        return self.embed_tokens
+
+    def set_input_embeddings(self, value):
+        self.embed_tokens = value
 
     def forward(
         self,
@@ -666,6 +672,12 @@ class FSMTDecoder(nn.Module):
             embed_tokens_weight_shape = self.embed_tokens.weight.shape
         self.output_projection = nn.Linear(embed_tokens_weight_shape[1], embed_tokens_weight_shape[0], bias=False)
         self.output_projection.weight = self.embed_tokens.weight
+    
+    def get_input_embeddings(self):
+        return self.embed_tokens
+
+    def set_input_embeddings(self, value):
+        self.embed_tokens = value
 
     def forward(
         self,
@@ -1007,6 +1019,12 @@ class FSMTModel(PretrainedFSMTModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    def get_encoder(self):
+        return self.encoder
+
+    def get_decoder(self):
+        return self.decoder
+
     @add_start_docstrings_to_model_forward(FSMT_INPUTS_DOCSTRING)
     @add_code_sample_docstrings(
         processor_class=_TOKENIZER_FOR_DOC,
@@ -1246,7 +1264,10 @@ class FSMTForConditionalGeneration(PretrainedFSMTModel):
         return reordered_past
 
     def get_encoder(self):
-        return self.model.encoder
+        return self.model.get_encoder()
+
+    def get_decoder(self):
+        return self.model.get_decoder()
 
     def get_output_embeddings(self):
         return self.model.decoder.embed_tokens
