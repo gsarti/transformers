@@ -16,7 +16,7 @@
 import unittest
 
 from transformers import T5Config, is_tf_available
-from transformers.testing_utils import require_sentencepiece, require_tf, require_tokenizers, slow
+from transformers.testing_utils import require_sentencepiece, require_tf, require_tokenizers, slow, tooslow
 from transformers.utils import cached_property
 
 from ...test_configuration_common import ConfigTester
@@ -305,8 +305,8 @@ class TFT5ModelTest(TFModelTesterMixin, unittest.TestCase):
                 name = model.get_bias()
                 assert name is None
 
+    @tooslow
     def test_saved_model_creation(self):
-        # This test is too long (>30sec) and makes fail the CI
         pass
 
     @slow
@@ -317,20 +317,6 @@ class TFT5ModelTest(TFModelTesterMixin, unittest.TestCase):
     def test_generate_with_headmasking(self):
         # TODO: Fix head-masking according to PyTorch T5 model
         pass
-
-    @slow
-    def test_resize_embeddings(self):
-        model = TFT5ForConditionalGeneration.from_pretrained("t5-small")
-        original_vocab_size = model.get_input_embeddings().weight.shape[0]
-        # the vocab size is defined in the model config
-        self.assertEqual(original_vocab_size, model.config.vocab_size)
-
-        tokenizer = T5Tokenizer.from_pretrained("t5-small")
-        tokenizer.add_special_tokens({"bos_token": "", "eos_token": ""})
-        model._resize_token_embeddings(len(tokenizer))
-        # the vocab size is now resized to the length of the tokenizer, which is different from the original size
-        self.assertEqual(model.get_input_embeddings().weight.shape[0], len(tokenizer))
-        self.assertNotEqual(model.get_input_embeddings().weight.shape[0], original_vocab_size)
 
     # This test is run in `TFT5EncoderOnlyModelTest`, where the main layer has the same inputs as the model
     @unittest.skip(reason="The inputs of the Main Layer are different.")
@@ -661,7 +647,7 @@ class TFT5ModelIntegrationTests(unittest.TestCase):
         loss = model(input_ids, labels=labels).loss
         mtf_score = -tf.math.reduce_mean(loss).numpy()
 
-        EXPECTED_SCORE = -4.7710114
+        EXPECTED_SCORE = -4.771147
         self.assertTrue(abs(mtf_score - EXPECTED_SCORE) < 1e-4)
 
     @slow
@@ -687,7 +673,7 @@ class TFT5ModelIntegrationTests(unittest.TestCase):
         loss = model(input_ids, labels=labels).loss
         mtf_score = -tf.math.reduce_mean(loss).numpy()
 
-        EXPECTED_SCORE = -14.759922
+        EXPECTED_SCORE = -14.757326
         self.assertTrue(abs(mtf_score - EXPECTED_SCORE) < 1e-4)
 
     @slow
@@ -711,7 +697,7 @@ class TFT5ModelIntegrationTests(unittest.TestCase):
         loss = model(input_ids, labels=labels).loss
         mtf_score = -tf.math.reduce_mean(loss).numpy()
 
-        EXPECTED_SCORE = -7.594554
+        EXPECTED_SCORE = -7.592465
         self.assertTrue(abs(mtf_score - EXPECTED_SCORE) < 1e-4)
 
     @slow

@@ -20,7 +20,7 @@ from transformers import NezhaConfig, is_torch_available
 from transformers.models.auto import get_values
 from transformers.testing_utils import require_torch, require_torch_gpu, slow, torch_device
 
-from ...generation.test_generation_utils import GenerationTesterMixin
+from ...generation.test_utils import GenerationTesterMixin
 from ...test_configuration_common import ConfigTester
 from ...test_modeling_common import ModelTesterMixin, floats_tensor, ids_tensor, random_attention_mask
 
@@ -60,7 +60,8 @@ class NezhaModelTester:
         hidden_act="gelu",
         hidden_dropout_prob=0.1,
         attention_probs_dropout_prob=0.1,
-        max_position_embeddings=512,
+        max_position_embeddings=128,
+        max_relative_position=32,
         type_vocab_size=16,
         type_sequence_label_size=2,
         initializer_range=0.02,

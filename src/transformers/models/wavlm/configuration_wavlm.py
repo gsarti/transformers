@@ -82,10 +82,10 @@ class WavLMConfig(PretrainedConfig):
             feature encoder. The length of *conv_dim* defines the number of 1D convolutional layers.
         conv_stride (`Tuple[int]` or `List[int]`, *optional*, defaults to `(5, 2, 2, 2, 2, 2, 2)`):
             A tuple of integers defining the stride of each 1D convolutional layer in the feature encoder. The length
-            of *conv_stride* defines the number of convolutional layers and has to match the the length of *conv_dim*.
+            of *conv_stride* defines the number of convolutional layers and has to match the length of *conv_dim*.
         conv_kernel (`Tuple[int]` or `List[int]`, *optional*, defaults to `(10, 3, 3, 3, 3, 3, 3)`):
             A tuple of integers defining the kernel size of each 1D convolutional layer in the feature encoder. The
-            length of *conv_kernel* defines the number of convolutional layers and has to match the the length of
+            length of *conv_kernel* defines the number of convolutional layers and has to match the length of
             *conv_dim*.
         conv_bias (`bool`, *optional*, defaults to `False`):
             Whether the 1D convolutional layers have a bias.
@@ -180,12 +180,12 @@ class WavLMConfig(PretrainedConfig):
     Example:
 
     ```python
-    >>> from transformers import WavLMModel, WavLMConfig
+    >>> from transformers import WavLMConfig, WavLMModel
 
     >>> # Initializing a WavLM facebook/wavlm-base-960h style configuration
     >>> configuration = WavLMConfig()
 
-    >>> # Initializing a model from the facebook/wavlm-base-960h style configuration
+    >>> # Initializing a model (with random weights) from the facebook/wavlm-base-960h style configuration
     >>> model = WavLMModel(configuration)
 
     >>> # Accessing the model configuration

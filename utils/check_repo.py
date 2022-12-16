@@ -39,14 +39,28 @@ PRIVATE_MODELS = [
     "LongT5Stack",
     "RealmBertModel",
     "T5Stack",
+    "SwitchTransformersStack",
     "TFDPRSpanPredictor",
+    "MaskFormerSwinModel",
+    "MaskFormerSwinPreTrainedModel",
 ]
 
 # Update this list for models that are not tested with a comment explaining the reason it should not be.
 # Being in this list is an exception and should **not** be the rule.
 IGNORE_NON_TESTED = PRIVATE_MODELS.copy() + [
     # models to ignore for not tested
+    "CLIPSegDecoder",  # Building part of bigger (tested) model.
+    "TableTransformerEncoder",  # Building part of bigger (tested) model.
+    "TableTransformerDecoder",  # Building part of bigger (tested) model.
+    "TimeSeriesTransformerEncoder",  # Building part of bigger (tested) model.
+    "TimeSeriesTransformerDecoder",  # Building part of bigger (tested) model.
+    "JukeboxVQVAE",  # Building part of bigger (tested) model.
+    "JukeboxPrior",  # Building part of bigger (tested) model.
+    "DeformableDetrEncoder",  # Building part of bigger (tested) model.
+    "DeformableDetrDecoder",  # Building part of bigger (tested) model.
     "OPTDecoder",  # Building part of bigger (tested) model.
+    "WhisperDecoder",  # Building part of bigger (tested) model.
+    "WhisperEncoder",  # Building part of bigger (tested) model.
     "DecisionTransformerGPT2Model",  # Building part of bigger (tested) model.
     "SegformerDecodeHead",  # Building part of bigger (tested) model.
     "PLBartEncoder",  # Building part of bigger (tested) model.
@@ -58,6 +72,8 @@ IGNORE_NON_TESTED = PRIVATE_MODELS.copy() + [
     "DetrEncoder",  # Building part of bigger (tested) model.
     "DetrDecoder",  # Building part of bigger (tested) model.
     "DetrDecoderWrapper",  # Building part of bigger (tested) model.
+    "ConditionalDetrEncoder",  # Building part of bigger (tested) model.
+    "ConditionalDetrDecoder",  # Building part of bigger (tested) model.
     "M2M100Encoder",  # Building part of bigger (tested) model.
     "M2M100Decoder",  # Building part of bigger (tested) model.
     "MCTCTEncoder",  # Building part of bigger (tested) model.
@@ -82,6 +98,9 @@ IGNORE_NON_TESTED = PRIVATE_MODELS.copy() + [
     "MvpEncoder",  # Building part of bigger (tested) model.
     "PegasusEncoder",  # Building part of bigger (tested) model.
     "PegasusDecoderWrapper",  # Building part of bigger (tested) model.
+    "PegasusXEncoder",  # Building part of bigger (tested) model.
+    "PegasusXDecoder",  # Building part of bigger (tested) model.
+    "PegasusXDecoderWrapper",  # Building part of bigger (tested) model.
     "DPREncoder",  # Building part of bigger (tested) model.
     "ProphetNetDecoderWrapper",  # Building part of bigger (tested) model.
     "RealmBertModel",  # Building part of bigger (tested) model.
@@ -94,10 +113,13 @@ IGNORE_NON_TESTED = PRIVATE_MODELS.copy() + [
     "TFElectraMainLayer",  # Building part of bigger (tested) model (should it be a TFPreTrainedModel ?)
     "TFRobertaForMultipleChoice",  # TODO: fix
     "TrOCRDecoderWrapper",  # Building part of bigger (tested) model.
+    "TFWhisperEncoder",  # Building part of bigger (tested) model.
+    "TFWhisperDecoder",  # Building part of bigger (tested) model.
     "SeparableConv1D",  # Building part of bigger (tested) model.
     "FlaxBartForCausalLM",  # Building part of bigger (tested) model.
     "FlaxBertForCausalLM",  # Building part of bigger (tested) model. Tested implicitly through FlaxRobertaForCausalLM.
     "OPTDecoderWrapper",
+    "TFSegformerDecodeHead",  # Not a regular model.
 ]
 
 # Update this list with test files that don't have a tester with a `all_model_classes` variable and which don't
@@ -124,12 +146,25 @@ TEST_FILES_WITH_NO_COMMON_TESTS = [
 # should **not** be the rule.
 IGNORE_NON_AUTO_CONFIGURED = PRIVATE_MODELS.copy() + [
     # models to ignore for model xxx mapping
+    "CLIPSegForImageSegmentation",
+    "CLIPSegVisionModel",
+    "CLIPSegTextModel",
+    "EsmForProteinFolding",
+    "TimeSeriesTransformerForPrediction",
+    "JukeboxVQVAE",
+    "JukeboxPrior",
+    "PegasusXEncoder",
+    "PegasusXDecoder",
+    "PegasusXDecoderWrapper",
+    "PegasusXEncoder",
+    "PegasusXDecoder",
+    "PegasusXDecoderWrapper",
     "DPTForDepthEstimation",
     "DecisionTransformerGPT2Model",
     "GLPNForDepthEstimation",
-    "ViltForQuestionAnswering",
     "ViltForImagesAndTextClassification",
     "ViltForImageAndTextRetrieval",
+    "ViltForTokenClassification",
     "ViltForMaskedLM",
     "XGLMEncoder",
     "XGLMDecoder",
@@ -137,21 +172,29 @@ IGNORE_NON_AUTO_CONFIGURED = PRIVATE_MODELS.copy() + [
     "PerceiverForMultimodalAutoencoding",
     "PerceiverForOpticalFlow",
     "SegformerDecodeHead",
+    "TFSegformerDecodeHead",
     "FlaxBeitForMaskedImageModeling",
     "PLBartEncoder",
     "PLBartDecoder",
     "PLBartDecoderWrapper",
     "BeitForMaskedImageModeling",
+    "ChineseCLIPTextModel",
+    "ChineseCLIPVisionModel",
     "CLIPTextModel",
+    "CLIPTextModelWithProjection",
     "CLIPVisionModel",
+    "CLIPVisionModelWithProjection",
     "GroupViTTextModel",
     "GroupViTVisionModel",
     "TFCLIPTextModel",
     "TFCLIPVisionModel",
+    "TFGroupViTTextModel",
+    "TFGroupViTVisionModel",
     "FlaxCLIPTextModel",
     "FlaxCLIPVisionModel",
     "FlaxWav2Vec2ForCTC",
     "DetrForSegmentation",
+    "ConditionalDetrForSegmentation",
     "DPRReader",
     "FlaubertForQuestionAnswering",
     "FlavaImageCodebook",
@@ -159,11 +202,16 @@ IGNORE_NON_AUTO_CONFIGURED = PRIVATE_MODELS.copy() + [
     "FlavaImageModel",
     "FlavaMultimodalModel",
     "GPT2DoubleHeadsModel",
+    "GPTSw3DoubleHeadsModel",
+    "LayoutLMForQuestionAnswering",
     "LukeForMaskedLM",
     "LukeForEntityClassification",
     "LukeForEntityPairClassification",
     "LukeForEntitySpanClassification",
     "OpenAIGPTDoubleHeadsModel",
+    "OwlViTTextModel",
+    "OwlViTVisionModel",
+    "OwlViTForObjectDetection",
     "RagModel",
     "RagSequenceForGeneration",
     "RagTokenForGeneration",
@@ -173,6 +221,7 @@ IGNORE_NON_AUTO_CONFIGURED = PRIVATE_MODELS.copy() + [
     "RealmReader",
     "TFDPRReader",
     "TFGPT2DoubleHeadsModel",
+    "TFLayoutLMForQuestionAnswering",
     "TFOpenAIGPTDoubleHeadsModel",
     "TFRagModel",
     "TFRagSequenceForGeneration",
@@ -190,7 +239,8 @@ IGNORE_NON_AUTO_CONFIGURED = PRIVATE_MODELS.copy() + [
     "VisualBertForMultipleChoice",
     "TFWav2Vec2ForCTC",
     "TFHubertForCTC",
-    "MaskFormerForInstanceSegmentation",
+    "XCLIPVisionModel",
+    "XCLIPTextModel",
 ]
 
 # Update this list for models that have multiple model types for the same
@@ -200,6 +250,7 @@ MODEL_TYPE_TO_DOC_MAPPING = OrderedDict(
         ("data2vec-text", "data2vec"),
         ("data2vec-audio", "data2vec"),
         ("data2vec-vision", "data2vec"),
+        ("donut-swin", "donut"),
     ]
 )
 
@@ -608,7 +659,6 @@ UNDOCUMENTED_OBJECTS = [
     "absl",  # External module
     "add_end_docstrings",  # Internal, should never have been in the main init.
     "add_start_docstrings",  # Internal, should never have been in the main init.
-    "cached_path",  # Internal used for downloading models.
     "convert_tf_weight_name_to_pt_weight_name",  # Internal used to convert model weights
     "logger",  # Internal logger
     "logging",  # External module
@@ -622,6 +672,15 @@ SHOULD_HAVE_THEIR_OWN_PAGE = [
     "PyTorchBenchmarkArguments",
     "TensorFlowBenchmark",
     "TensorFlowBenchmarkArguments",
+    "BitBackbone",
+    "MaskFormerSwinBackbone",
+    "ResNetBackbone",
+    "AutoBackbone",
+    "DinatBackbone",
+    "NatBackbone",
+    "MaskFormerSwinConfig",
+    "MaskFormerSwinModel",
+    "SwinBackbone",
 ]
 
 

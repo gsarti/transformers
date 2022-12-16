@@ -70,6 +70,30 @@ LOCALIZED_READMES = {
             " {paper_authors}.{supplements}"
         ),
     },
+    "README_es.md": {
+        "start_prompt": "🤗 Transformers actualmente proporciona las siguientes arquitecturas",
+        "end_prompt": "1. ¿Quieres aportar un nuevo modelo?",
+        "format_model_list": (
+            "**[{title}]({model_link})** (from {paper_affiliations}) released with the paper {paper_title_link} by"
+            " {paper_authors}.{supplements}"
+        ),
+    },
+    "README_ja.md": {
+        "start_prompt": "🤗Transformersは現在、以下のアーキテクチャを提供しています",
+        "end_prompt": "1. 新しいモデルを投稿したいですか？",
+        "format_model_list": (
+            "**[{title}]({model_link})** (from {paper_affiliations}) released with the paper {paper_title_link} by"
+            " {paper_authors}.{supplements}"
+        ),
+    },
+    "README_hd.md": {
+        "start_prompt": "🤗 ट्रांसफॉर्मर वर्तमान में निम्नलिखित आर्किटेक्चर का समर्थन करते हैं",
+        "end_prompt": "1. एक नए मॉडल में योगदान देना चाहते हैं?",
+        "format_model_list": (
+            "**[{title}]({model_link})** (from {paper_affiliations}) released with the paper {paper_title_link} by"
+            " {paper_authors}.{supplements}"
+        ),
+    },
 }
 
 
@@ -133,6 +157,7 @@ def find_code_in_transformers(object_name):
 
 _re_copy_warning = re.compile(r"^(\s*)#\s*Copied from\s+transformers\.(\S+\.\S+)\s*($|\S.*$)")
 _re_replace_pattern = re.compile(r"^\s*(\S+)->(\S+)(\s+.*|$)")
+_re_fill_pattern = re.compile(r"<FILL\s+[^>]*>")
 
 
 def get_indent(code):
@@ -219,7 +244,12 @@ def is_copy_consistent(filename, overwrite=False):
 
         # Test for a diff and act accordingly.
         if observed_code != theoretical_code:
-            diffs.append([object_name, start_index])
+            diff_index = start_index + 1
+            for observed_line, theoretical_line in zip(observed_code.split("\n"), theoretical_code.split("\n")):
+                if observed_line != theoretical_line:
+                    break
+                diff_index += 1
+            diffs.append([object_name, diff_index])
             if overwrite:
                 lines = lines[:start_index] + [theoretical_code] + lines[line_index:]
                 line_index = start_index + 1
@@ -346,6 +376,11 @@ def convert_to_localized_md(model_list, localized_model_list, format_str):
             # Add an anchor white space behind a model description string for regex.
             # If metadata cannot be captured, the English version will be directly copied.
             localized_model_index[title] = _re_capture_meta.sub(_rep, model + " ")
+        elif _re_fill_pattern.search(localized_model_index[title]) is not None:
+            update = _re_capture_meta.sub(_rep, model + " ")
+            if update != localized_model_index[title]:
+                readmes_match = False
+                localized_model_index[title] = update
         else:
             # Synchronize link
             localized_model_index[title] = _re_capture_title_link.sub(
@@ -465,7 +500,9 @@ SPECIAL_MODEL_NAMES = {
     "Data2VecAudio": "Data2Vec",
     "Data2VecText": "Data2Vec",
     "Data2VecVision": "Data2Vec",
+    "DonutSwin": "Swin Transformer",
     "Marian": "MarianMT",
+    "MaskFormerSwin": "Swin Transformer",
     "OpenAI GPT-2": "GPT-2",
     "OpenAI GPT": "GPT",
     "Perceiver": "Perceiver IO",
@@ -489,8 +526,8 @@ MODELS_NOT_IN_README = [
 
 
 README_TEMPLATE = (
-    "1. **[{model_name}](https://huggingface.co/docs/transformers/model_doc/{model_type})** (from <FILL INSTITUTION>) "
-    "released with the paper [<FILL PAPER TITLE>](<FILL ARKIV LINK>) by <FILL AUTHORS>."
+    "1. **[{model_name}](https://huggingface.co/docs/main/transformers/model_doc/{model_type})** (from "
+    "<FILL INSTITUTION>) released with the paper [<FILL PAPER TITLE>](<FILL ARKIV LINK>) by <FILL AUTHORS>."
 )
 
 

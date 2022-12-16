@@ -22,7 +22,7 @@ from transformers import MarianConfig, is_torch_available
 from transformers.testing_utils import require_sentencepiece, require_tokenizers, require_torch, slow, torch_device
 from transformers.utils import cached_property
 
-from ...generation.test_generation_utils import GenerationTesterMixin
+from ...generation.test_utils import GenerationTesterMixin
 from ...test_configuration_common import ConfigTester
 from ...test_modeling_common import ModelTesterMixin, ids_tensor
 
@@ -438,10 +438,7 @@ class TestMarian_EN_DE_More(MarianIntegrationTest):
         src, tgt = ["I am a small frog"], ["Ich bin ein kleiner Frosch."]
         expected_ids = [38, 121, 14, 697, 38848, 0]
 
-        model_inputs = self.tokenizer(src, return_tensors="pt").to(torch_device)
-        with self.tokenizer.as_target_tokenizer():
-            targets = self.tokenizer(tgt, return_tensors="pt")
-        model_inputs["labels"] = targets["input_ids"].to(torch_device)
+        model_inputs = self.tokenizer(src, text_target=tgt, return_tensors="pt").to(torch_device)
 
         self.assertListEqual(expected_ids, model_inputs.input_ids[0].tolist())
 

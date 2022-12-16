@@ -202,27 +202,6 @@ class TFCoreModelTesterMixin:
                 self.assertTrue(not isnan(val_loss))
 
     @slow
-    def test_saved_model_creation(self):
-        config, inputs_dict = self.model_tester.prepare_config_and_inputs_for_common()
-        config.output_hidden_states = False
-        config.output_attentions = False
-
-        if hasattr(config, "use_cache"):
-            config.use_cache = False
-
-        model_class = self.all_model_classes[0]
-
-        class_inputs_dict = self._prepare_for_class(inputs_dict, model_class)
-        model = model_class(config)
-
-        model(class_inputs_dict)
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            model.save_pretrained(tmpdirname, saved_model=True)
-            saved_model_dir = os.path.join(tmpdirname, "saved_model", "1")
-            self.assertTrue(os.path.exists(saved_model_dir))
-
-    @slow
     def test_saved_model_creation_extended(self):
         config, inputs_dict = self.model_tester.prepare_config_and_inputs_for_common()
         config.output_hidden_states = True
@@ -238,6 +217,17 @@ class TFCoreModelTesterMixin:
             class_inputs_dict = self._prepare_for_class(inputs_dict, model_class)
             model = model_class(config)
             num_out = len(model(class_inputs_dict))
+
+            for key in list(class_inputs_dict.keys()):
+                # Remove keys not in the serving signature, as the SavedModel will not be compiled to deal with them
+                if key not in model.serving.input_signature[0]:
+                    del class_inputs_dict[key]
+                # Check it's a tensor, in case the inputs dict has some bools in it too
+                elif isinstance(class_inputs_dict[key], tf.Tensor) and class_inputs_dict[key].dtype.is_integer:
+                    class_inputs_dict[key] = tf.cast(class_inputs_dict[key], tf.int32)
+
+            if set(class_inputs_dict.keys()) != set(model.serving.input_signature[0].keys()):
+                continue  # Some models have inputs that the preparation functions don't create, we skip those
 
             with tempfile.TemporaryDirectory() as tmpdirname:
                 model.save_pretrained(tmpdirname, saved_model=True)
@@ -274,16 +264,17 @@ class TFCoreModelTesterMixin:
     def test_mixed_precision(self):
         tf.keras.mixed_precision.set_global_policy("mixed_float16")
 
-        config, inputs_dict = self.model_tester.prepare_config_and_inputs_for_common()
+        # try/finally block to ensure subsequent tests run in float32
+        try:
+            config, inputs_dict = self.model_tester.prepare_config_and_inputs_for_common()
+            for model_class in self.all_model_classes:
+                class_inputs_dict = self._prepare_for_class(inputs_dict, model_class)
+                model = model_class(config)
+                outputs = model(class_inputs_dict)
 
-        for model_class in self.all_model_classes:
-            class_inputs_dict = self._prepare_for_class(inputs_dict, model_class)
-            model = model_class(config)
-            outputs = model(class_inputs_dict)
-
-            self.assertIsNotNone(outputs)
-
-        tf.keras.mixed_precision.set_global_policy("float32")
+                self.assertIsNotNone(outputs)
+        finally:
+            tf.keras.mixed_precision.set_global_policy("float32")
 
     @slow
     def test_train_pipeline_custom_model(self):
